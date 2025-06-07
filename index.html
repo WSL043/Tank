@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>双人坦克大战</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        <div id="gameInfo">
+            <div class="player-info player1">
+                <div>玩家1 (绿色)</div>
+                <div>生命: <span id="player1-lives">3</span></div>
+                <div>分数: <span id="player1-score">0</span></div>
+            </div>
+            <div class="player-info player2">
+                <div>玩家2 (蓝色)</div>
+                <div>生命: <span id="player2-lives">3</span></div>
+                <div>分数: <span id="player2-score">0</span></div>
+            </div>
+        </div>
+        <div id="instructions">
+            <div class="controls">玩家1（绿色坦克）: WASD移动, 空格射击</div>
+            <div class="controls">玩家2（蓝色坦克）: 方向键移动, Enter射击</div>
+            <div class="controls" style="color: #FFD700; margin-top: 10px;">按F1键切换单人/双人模式</div>
+            <div class="controls" style="color: #FF5722; margin-top: 5px;">按F2键切换AI难度 (简单/普通/困难)</div>
+            <div class="game-features" style="margin-top: 10px; font-size: 12px; color: #888;">
+                <div>• 血量系统: 100HP，每次击中扣20血</div>
+                <div>• 改进的地图和障碍物外观</div>
+                <div>• 修复的坦克炮塔方向系统</div>
+                <div>• 三种AI难度选择</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="gameOver">
+        <div>
+            <h2 id="gameOverText">游戏结束</h2>
+            <button onclick="game.restart()">重新开始</button>
+        </div>
+    </div>
+
+    <!-- 模块化JavaScript文件 -->
+    <script src="game-utils.js"></script>
+    <script src="bullet.js"></script>
+    <script src="tank.js"></script>
+    <script src="game-main.js"></script>
+</body>
+</html>
