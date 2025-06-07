@@ -103,7 +103,7 @@ class TankGame {
 
     generateMap() {
         this.obstacles = [];
-        const obstacleCount = Math.floor((this.width * this.height) * 0.06 / (30 * 30)); // 增加到6%密度
+        const obstacleCount = Math.floor((this.width * this.height) * 0.08 / (30 * 30)); // 增加到8%密度
 
         for (let i = 0; i < obstacleCount; i++) {
             let x, y, validPosition = false;
@@ -247,13 +247,20 @@ class TankGame {
                 }
             }
         }
-    }
-
-    checkBulletCollisions(bullet) {
+    }    checkBulletCollisions(bullet) {
         // 检查与障碍物碰撞
-        for (let obstacle of this.obstacles) {
+        for (let i = this.obstacles.length - 1; i >= 0; i--) {
+            const obstacle = this.obstacles[i];
             if (this.isColliding(bullet, obstacle)) {
+                // 对障碍物造成伤害
+                obstacle.takeDamage(1);
                 this.createExplosion(bullet.x, bullet.y);
+
+                // 如果障碍物被摧毁，从数组中移除
+                if (obstacle.destroyed) {
+                    this.obstacles.splice(i, 1);
+                }
+
                 this.bulletPool.release(bullet);
                 return true;
             }
@@ -296,10 +303,8 @@ class TankGame {
     updateScore(player) {
         player.score += 100;
         document.getElementById(`player${player.id}-score`).textContent = player.score;
-    }
-
-    checkGameOver() {
-        const alivePlayers = this.players.filter(p => p.health > 0 && p.lives > 0);
+    }    checkGameOver() {
+        const alivePlayers = this.players.filter(p => p.health > 0);
         if (alivePlayers.length <= 1) {
             this.gameRunning = false;
             const winner = alivePlayers.length === 1 ? alivePlayers[0] : null;
@@ -412,11 +417,8 @@ class TankGame {
         });
 
         // 重新生成地图
-        this.generateMap();
-
-        // 重置UI
+        this.generateMap();        // 重置UI
         this.players.forEach(player => {
-            document.getElementById(`player${player.id}-lives`).textContent = player.lives;
             document.getElementById(`player${player.id}-score`).textContent = player.score;
         });
 

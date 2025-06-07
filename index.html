@@ -8,16 +8,13 @@
 </head>
 <body>
     <div id="gameContainer">
-        <canvas id="gameCanvas" width="800" height="600"></canvas>
-        <div id="gameInfo">
+        <canvas id="gameCanvas" width="800" height="600"></canvas>        <div id="gameInfo">
             <div class="player-info player1">
                 <div>玩家1 (绿色)</div>
-                <div>生命: <span id="player1-lives">3</span></div>
                 <div>分数: <span id="player1-score">0</span></div>
             </div>
             <div class="player-info player2">
                 <div>玩家2 (蓝色)</div>
-                <div>生命: <span id="player2-lives">3</span></div>
                 <div>分数: <span id="player2-score">0</span></div>
             </div>
         </div>
@@ -25,12 +22,12 @@
             <div class="controls">玩家1（绿色坦克）: WASD移动, 空格射击</div>
             <div class="controls">玩家2（蓝色坦克）: 方向键移动, Enter射击</div>
             <div class="controls" style="color: #FFD700; margin-top: 10px;">按F1键切换单人/双人模式</div>
-            <div class="controls" style="color: #FF5722; margin-top: 5px;">按F2键切换AI难度 (简单/普通/困难)</div>
-            <div class="game-features" style="margin-top: 10px; font-size: 12px; color: #888;">
-                <div>• 血量系统: 100HP，每次击中扣20血</div>
-                <div>• 改进的地图和障碍物外观</div>
-                <div>• 修复的坦克炮塔方向系统</div>
-                <div>• 三种AI难度选择</div>
+            <div class="controls" style="color: #FF5722; margin-top: 5px;">按F2键切换AI难度 (简单/普通/困难)</div>            <div class="game-features" style="margin-top: 10px; font-size: 12px; color: #888;">
+                <div>• 血量系统: 100HP，每次击中扣20血，血条打完即死</div>
+                <div>• 可破坏障碍物: 木头(1次)、石头(3次)、铁块(5次)</div>
+                <div>• 炮塔跟随移动方向，更真实的坦克控制</div>
+                <div>• 三种AI难度: 简单、普通、困难</div>
+                <div>• 美化的地图和视觉效果</div>
             </div>
         </div>
     </div>

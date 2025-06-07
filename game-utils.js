@@ -1,28 +1,105 @@
-// 障碍物类 - 改进外观
+// 障碍物类 - 可破坏障碍物
 class Obstacle {
-    constructor(x, y) {
+    constructor(x, y, type = null) {
         this.x = x;
         this.y = y;
         this.size = 30;
-        this.type = Math.floor(Math.random() * 3); // 随机障碍物类型
+
+        // 根据比例分配障碍物类型: 木头5，石头3，铁2
+        if (type !== null) {
+            this.type = type;
+        } else {
+            const rand = Math.random() * 10;
+            if (rand < 5) this.type = 0; // 木头 50%
+            else if (rand < 8) this.type = 1; // 石头 30%
+            else this.type = 2; // 铁 20%
+        }
+
+        // 设置障碍物属性
+        switch(this.type) {
+            case 0: // 木头
+                this.name = '木头';
+                this.maxHealth = 1;
+                this.health = 1;
+                break;
+            case 1: // 石头
+                this.name = '石头';
+                this.maxHealth = 3;
+                this.health = 3;
+                break;
+            case 2: // 铁
+                this.name = '铁';
+                this.maxHealth = 5;
+                this.health = 5;
+                break;
+        }
+
+        this.destroyed = false;
+    }
+
+    takeDamage(damage = 1) {
+        this.health -= damage;
+        if (this.health <= 0) {
+            this.destroyed = true;
+        }
+        return this.destroyed;
     }
 
     render(ctx) {
+        if (this.destroyed) return;
+
         ctx.save();
 
+        // 根据血量调整透明度
+        const healthPercent = this.health / this.maxHealth;
+        ctx.globalAlpha = 0.3 + (healthPercent * 0.7); // 从30%到100%透明度
+
         switch(this.type) {
-            case 0: // 石块
+            case 0: // 木头
+                this.renderWood(ctx);
+                break;
+            case 1: // 石头
                 this.renderStone(ctx);
                 break;
-            case 1: // 砖块
-                this.renderBrick(ctx);
-                break;
-            case 2: // 钢块
+            case 2: // 铁
                 this.renderSteel(ctx);
                 break;
         }
 
         ctx.restore();
+
+        // 显示血量条（如果受损）
+        if (this.health < this.maxHealth) {
+            this.renderHealthBar(ctx);
+        }
+    }
+
+    renderWood(ctx) {
+        // 木头外观
+        ctx.fillStyle = '#8B4513';
+        ctx.fillRect(this.x, this.y, this.size, this.size);
+
+        // 木纹纹理
+        ctx.fillStyle = '#A0522D';
+        for (let i = 0; i < 5; i++) {
+            const y = this.y + i * 6;
+            ctx.fillRect(this.x, y, this.size, 2);
+        }
+
+        // 木纹线条
+        ctx.strokeStyle = '#654321';
+        ctx.lineWidth = 1;
+        for (let i = 0; i < 3; i++) {
+            ctx.beginPath();
+            ctx.moveTo(this.x, this.y + i * 10 + 5);
+            ctx.lineTo(this.x + this.size, this.y + i * 10 + 3);
+            ctx.stroke();
+        }
+
+        // 边框
+        ctx.strokeStyle = '#D2691E';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(this.x, this.y, this.size, this.size);
     }
 
     renderStone(ctx) {
@@ -34,7 +111,7 @@ class Obstacle {
         ctx.fillStyle = '#808080';
         ctx.fillRect(this.x + 2, this.y + 2, this.size - 4, this.size - 4);
 
-        // 添加裂纹效果
+        // 添加裂纹效果（受损时更多裂纹）
         ctx.strokeStyle = '#404040';
         ctx.lineWidth = 1;
         ctx.beginPath();
@@ -42,45 +119,17 @@ class Obstacle {
         ctx.lineTo(this.x + 8, this.y + this.size);
         ctx.moveTo(this.x, this.y + 10);
         ctx.lineTo(this.x + this.size, this.y + 8);
+
+        if (this.health < this.maxHealth) {
+            ctx.moveTo(this.x + 15, this.y);
+            ctx.lineTo(this.x + 12, this.y + this.size);
+            ctx.moveTo(this.x + this.size, this.y + 20);
+            ctx.lineTo(this.x, this.y + 18);
+        }
         ctx.stroke();
 
         // 边框
         ctx.strokeStyle = '#A9A9A9';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(this.x, this.y, this.size, this.size);
-    }
-
-    renderBrick(ctx) {
-        // 砖块外观
-        ctx.fillStyle = '#8B4513';
-        ctx.fillRect(this.x, this.y, this.size, this.size);
-
-        // 砖块纹理
-        const brickRows = 3;
-        const brickHeight = this.size / brickRows;
-
-        for (let i = 0; i < brickRows; i++) {
-            const y = this.y + i * brickHeight;
-
-            // 交替砖块模式
-            if (i % 2 === 0) {
-                ctx.strokeStyle = '#654321';
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                ctx.moveTo(this.x + this.size/2, y);
-                ctx.lineTo(this.x + this.size/2, y + brickHeight);
-                ctx.stroke();
-            }
-
-            // 水平线
-            ctx.beginPath();
-            ctx.moveTo(this.x, y + brickHeight);
-            ctx.lineTo(this.x + this.size, y + brickHeight);
-            ctx.stroke();
-        }
-
-        // 边框
-        ctx.strokeStyle = '#D2691E';
         ctx.lineWidth = 2;
         ctx.strokeRect(this.x, this.y, this.size, this.size);
     }
@@ -109,10 +158,41 @@ class Obstacle {
         ctx.arc(this.x + this.size - 5, this.y + this.size - 5, 2, 0, Math.PI * 2);
         ctx.fill();
 
+        // 受损效果
+        if (this.health < this.maxHealth) {
+            ctx.fillStyle = '#FF4500';
+            ctx.fillRect(this.x + Math.random() * 5, this.y + Math.random() * 5, 3, 3);
+        }
+
         // 边框
         ctx.strokeStyle = '#B0C4DE';
         ctx.lineWidth = 2;
         ctx.strokeRect(this.x, this.y, this.size, this.size);
+    }
+
+    renderHealthBar(ctx) {
+        const barWidth = this.size;
+        const barHeight = 3;
+        const barX = this.x;
+        const barY = this.y - 8;
+
+        // 血条背景
+        ctx.fillStyle = '#333';
+        ctx.fillRect(barX, barY, barWidth, barHeight);
+
+        // 血条
+        const healthPercent = this.health / this.maxHealth;
+        let healthColor = '#4CAF50'; // 绿色
+        if (healthPercent < 0.7) healthColor = '#FFC107'; // 黄色
+        if (healthPercent < 0.3) healthColor = '#F44336'; // 红色
+
+        ctx.fillStyle = healthColor;
+        ctx.fillRect(barX, barY, barWidth * healthPercent, barHeight);
+
+        // 血条边框
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(barX, barY, barWidth, barHeight);
     }
 }
 

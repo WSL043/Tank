@@ -3,14 +3,12 @@ class Tank {
     constructor(x, y, color, id, isAI = false) {
         this.x = x;
         this.y = y;
-        this.size = 30;
-        this.color = color;
+        this.size = 30;        this.color = color;
         this.id = id;
         this.speed = 3;
         this.angle = 0; // 炮塔角度
         this.bodyAngle = 0; // 车体角度
-        this.lives = 3;
-        this.health = 100; // 添加血量系统
+        this.health = 100; // 血量系统
         this.maxHealth = 100;
         this.score = 0;
         this.lastShot = 0;
@@ -151,9 +149,7 @@ class Tank {
     makeAIDecision(game) {
         // 找到最近的敌人
         this.aiTarget = null;
-        let minDistance = Infinity;
-
-        for (let player of game.players) {
+        let minDistance = Infinity;        for (let player of game.players) {
             if (player !== this && player.health > 0) {
                 const dx = player.x - this.x;
                 const dy = player.y - this.y;
@@ -237,30 +233,16 @@ class Tank {
 
     canShoot() {
         return Date.now() - this.lastShot > this.shootCooldown;
-    }
-
-    takeDamage(damage = 20) {
+    }    takeDamage(damage = 20) {
         this.health -= damage;
 
         if (this.health <= 0) {
             this.health = 0;
-            this.lives--;
-            if (this.lives > 0) {
-                // 重生并恢复血量
-                this.health = this.maxHealth;
-                this.x = this.initialX;
-                this.y = this.initialY;
-            }
+            // 坦克死亡，不再重生
         }
-
-        // 更新UI
-        document.getElementById(`player${this.id}-lives`).textContent = this.lives;
-    }
-
-    reset() {
+    }    reset() {
         this.x = this.initialX;
         this.y = this.initialY;
-        this.lives = 3;
         this.health = this.maxHealth;
         this.score = 0;
         this.lastShot = 0;
@@ -316,24 +298,16 @@ class Tank {
 
         ctx.strokeStyle = '#fff';
         ctx.lineWidth = 1;
-        ctx.stroke();
-
-        ctx.restore();
+        ctx.stroke();        ctx.restore();
 
         // 绘制血条
         this.renderHealthBar(ctx);
-
-        // 绘制生命值指示器
-        for (let i = 0; i < this.lives; i++) {
-            ctx.fillStyle = '#ff0000';
-            ctx.fillRect(this.x + i * 8, this.y - 25, 6, 6);
-        }
 
         // AI标识和难度显示
         if (this.isAI) {
             ctx.fillStyle = '#FFD700';
             ctx.font = '12px Arial';
-            ctx.fillText(`AI(${this.aiDifficulty.toUpperCase()})`, this.x, this.y - 30);
+            ctx.fillText(`AI(${this.aiDifficulty.toUpperCase()})`, this.x, this.y - 25);
         }
     }
 
